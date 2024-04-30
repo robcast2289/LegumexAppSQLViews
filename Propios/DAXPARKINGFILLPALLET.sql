@@ -10,8 +10,10 @@ FROM daxinventonhandcontainer t1
 INNER JOIN
   (SELECT AVG(QtyConvert01ByUnit) QtyConvert01ByUnit,
           shipcpycontainerid,
+		  shipcpycontainerrecid,
           wmslocationid
    FROM daxinventonhandcontainer
    GROUP BY shipcpycontainerid,
-            wmslocationid) t2 ON t1.shipcpycontainerid = t2.shipcpycontainerid
+			shipcpycontainerrecid,
+            wmslocationid) t2 ON t1.shipcpycontainerrecid = t2.shipcpycontainerrecid
 AND t1.wmslocationid = t2.wmslocationid
