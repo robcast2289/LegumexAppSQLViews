@@ -1,5 +1,6 @@
 -- Se utiliza para listar los almacenes en: 
 -- Ordenes de Transferencia
+-- Diario de Transferir
 ALTER VIEW [dbo].[DAXCONSULTA] AS
 SELECT DISTINCT INVENTLOCATIONID,
                 DATAAREAID,
