@@ -20,12 +20,14 @@
 
  -- Listar con comando de Eliminar y crear de las vistas creadas cuera de Dynamics
  SELECT name,
- CONCAT('IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS  WHERE TABLE_NAME = ''',name,''') DROP VIEW ',name,CHAR(10),' GO ',char(10),
+ CONCAT('IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS  WHERE TABLE_NAME = ''',name,''') DROP VIEW ',name,CHAR(10),'GO',char(10),
  (
 	 SELECT definition
 	FROM sys.sql_modules  
 	WHERE object_id = OBJECT_ID(name)
- ),CHAR(10)) as query
+ ),
+ CHAR(10)  --Quitar
+ ,'GO') as query
  FROM sysobjects 
  WHERE xtype = 'V'
  AND name NOT IN (
