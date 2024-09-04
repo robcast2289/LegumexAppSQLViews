@@ -1,6 +1,7 @@
 CREATE PROCEDURE DAXVEHICLES 
     @SHIPCPYCONTAINERID NVARCHAR(30),
-    @shipCpyContainerState INT
+    @parkingSpaceTransTypeActual INT,
+	@external_movement INT = 0
 AS
 BEGIN
     DECLARE @ResultTable TABLE (
@@ -9,21 +10,23 @@ BEGIN
     );
 
     DECLARE @SHIPPINGCPYVENDTABLERECID BIGINT;
+	DECLARE @RECID BIGINT;
     DECLARE @PARKINGSPACETRANSTYPE INT;
     DECLARE @SHIPPINGCPYTYPE INT;
 
     -- Obtener los valores necesarios de SHIPCPYCONTAINERTABLE
     SELECT @SHIPPINGCPYVENDTABLERECID = SHIPPINGCPYVENDTABLERECID,
-           @SHIPCPYCONTAINERID = SHIPCPYCONTAINERID
+           @SHIPCPYCONTAINERID = SHIPCPYCONTAINERID,
+		   @RECID = RECID
     FROM SHIPCPYCONTAINERTABLE
     WHERE SHIPCPYCONTAINERID = @SHIPCPYCONTAINERID;
 
     -- Determinar el RECID de SHIPPINGCPYVENDTABLE basado en shipCpyContainerState
-    IF @shipCpyContainerState = 2 -- Si es, Ingresado
+    IF @parkingSpaceTransTypeActual IN (2, 9) -- Si la posicion es, [Reservado -> Ingresado] [Traslado preparado entrada externa -> Ingresado]
     BEGIN
         SELECT TOP 1 @PARKINGSPACETRANSTYPE = T1.PARKINGSPACETRANSTYPE
         FROM SHIPCPYCONTAINERTRANS T1
-        WHERE T1.SHIPCPYCONTAINERTABLERECID = @SHIPPINGCPYVENDTABLERECID
+        WHERE T1.SHIPCPYCONTAINERTABLERECID = @RECID
         ORDER BY T1.CREATEDDATETIME DESC, T1.RECID DESC;
 
         IF @PARKINGSPACETRANSTYPE = 13 -- Si es, Traslado de salida externo
@@ -40,13 +43,13 @@ BEGIN
             END
         END
     END
-    ELSE IF @shipCpyContainerState IN (4, 5, 6) -- Si es, Cerrado, Salida Final o Salida Externa
+    ELSE IF @parkingSpaceTransTypeActual IN (4, 7, 10) -- Si la posicion es, [abierto -> Cerrado] [abierto -> Traslado Preparado externo] [Cerrado -> Salida Final] [Traslado preparado salida externa -> Salida Externa]
     BEGIN
         SELECT @SHIPPINGCPYTYPE = SHIPPINGCPYTYPE
         FROM SHIPPINGCPYVENDTABLE
         WHERE RECID = @SHIPPINGCPYVENDTABLERECID;
 
-        IF @shipCpyContainerState = 6 AND @SHIPPINGCPYTYPE = 0 -- Si es Salida Externa y la naviera es comercial
+        IF ((@parkingSpaceTransTypeActual = 10) OR (@parkingSpaceTransTypeActual = 4 AND @external_movement = 1)) AND @SHIPPINGCPYTYPE = 0 -- Si es Salida Externa ó es traslado preparado externo y la naviera es comercial
         BEGIN
             SELECT TOP 1 @SHIPPINGCPYVENDTABLERECID = RECID
             FROM SHIPPINGCPYVENDTABLE
