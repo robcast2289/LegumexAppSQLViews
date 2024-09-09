@@ -29,7 +29,7 @@
  CHAR(10)  --Quitar
  ,'GO') as query
  FROM sysobjects 
- WHERE xtype = 'V'
+ WHERE xtype = 'V'  -- 'P' Para StoreProcedures
  AND name NOT IN (
  SELECT NAME FROM SQLDICTIONARY
  WHERE FIELDID = 0
