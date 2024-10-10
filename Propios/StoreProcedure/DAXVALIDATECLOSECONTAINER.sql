@@ -1,4 +1,4 @@
-ALTER PROCEDURE [dbo].[DAXVALIDATECLOSECONTAINER] 
+CREATE PROCEDURE [dbo].[DAXVALIDATECLOSECONTAINER] 
     @ShipCpyContainerId NVARCHAR(30)
 AS
 BEGIN
@@ -52,7 +52,7 @@ BEGIN
 
 		IF @physicalInventCalculated != 0.00
 		BEGIN
-			SELECT 'El contenedor ' + @ShipCpyContainerId + ', en el código ' + @ItemId + ' tiene disponible ' + STR(@physicalInventCalculated,10,2) AS ErrorMessage;
+			SELECT 'El contenedor ' + @ShipCpyContainerId + ', en el código ' + @ItemId + ' tiene disponible ' + STR(@physicalInventCalculated,8,2) AS ErrorMessage;
 			RETURN;
 		END
 	END
@@ -139,6 +139,7 @@ BEGIN
 		CLOSE SalesTableCursor;
         DEALLOCATE SalesTableCursor;
 	END
+
+	SELECT NULL AS ErrorMessage;
+	RETURN;
 END
-
-
