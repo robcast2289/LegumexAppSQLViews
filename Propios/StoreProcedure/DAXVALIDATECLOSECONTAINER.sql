@@ -17,7 +17,8 @@ BEGIN
     SELECT @ShipCpyContainerTableRecId = T1.RECID,
 			@ZoneId = T1.ZONEID
     FROM SHIPCPYCONTAINERTABLE T1
-    WHERE T1.SHIPCPYCONTAINERID = @ShipCpyContainerId;
+    WHERE T1.SHIPCPYCONTAINERID = @ShipCpyContainerId
+	AND T1.SHIPCPYCONTAINERSTATE NOT IN (5);
 
     -- Obtiene los valores necesarios de WHSZONE
     SELECT @DontValidateSalesTable = T1.DONTVALIDATESALESTABLE,

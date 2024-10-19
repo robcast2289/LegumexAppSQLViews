@@ -20,7 +20,8 @@ BEGIN
            @SHIPCPYCONTAINERID = SHIPCPYCONTAINERID,
 		   @RECID = RECID
     FROM SHIPCPYCONTAINERTABLE
-    WHERE SHIPCPYCONTAINERID = @SHIPCPYCONTAINERID;
+    WHERE SHIPCPYCONTAINERID = @SHIPCPYCONTAINERID
+    AND SHIPCPYCONTAINERSTATE NOT IN (5);
 
     -- Determinar el RECID de SHIPPINGCPYVENDTABLE basado en shipCpyContainerState
     IF @parkingSpaceTransTypeActual IN (2, 9) -- Si la posicion es, [Reservado -> Ingresado] [Traslado preparado entrada externa -> Ingresado]
